@@ -38,13 +38,13 @@ public class FXMLController {
     private TextField txtX2; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbAnno"
-    private ComboBox<?> cmbAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtN"
     private TextField txtN; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbUtente"
-    private ComboBox<?> cmbUtente; // Value injected by FXMLLoader
+    private ComboBox<String> cmbUtente; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtX1"
     private TextField txtX1; // Value injected by FXMLLoader
@@ -54,11 +54,57 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	
+    	cmbUtente.getItems().clear();
+    	txtResult.clear();
+    	Integer anno = cmbAnno.getSelectionModel().getSelectedItem();
+    	 if (anno == null) {
+    	 txtResult.appendText("Perfavore seleziona un anno!\n");
+    	 return;
+    	 }
+    	 
+    	 String input = txtN.getText();
+    	 int numRecensioni = 0;
+    	 if (input == "") {
+    	  txtResult.setText("Perfavore inserisci un numero di recensioni!\n");
+    	  return;
+    	  }
+    	 try {
+    		numRecensioni = Integer.parseInt(input);
+    	  } catch (NumberFormatException e) {
+    	  e.printStackTrace();
+    	  return;
+    	  }
+    	 if (numRecensioni < 0) {
+    	  txtResult.appendText("Perfavore inserisci un numero di recensioni positivo!\n");
+    	  return;
+    	  }
+    	 
+    	 this.model.creaGrafo(numRecensioni, anno);
+    	 
+    	 txtResult.appendText("Grafo creato!\n");
+    	 txtResult.appendText("#VERTICI: " + this.model.numeroVertici() + "\n");
+    	 txtResult.appendText("#ARCHI: " + this.model.numeroArchi() + "\n");
+    	 
+    	 cmbUtente.getItems().addAll(this.model.listaUtenti());
+    	 
+    	 
+    	 
+    	
 
     }
 
     @FXML
     void doUtenteSimile(ActionEvent event) {
+    	
+    	String utente = cmbUtente.getSelectionModel().getSelectedItem();
+   	 if (utente == null) {
+   	 txtResult.appendText("Perfavore seleziona un utente!\n");
+   	 return;
+   	 }
+    	
+    	txtResult.appendText("\n");
+    	txtResult.appendText(this.model.utenteSimile(utente));
 
     }
     
@@ -84,5 +130,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	cmbAnno.getItems().addAll(this.model.listaAnni());
     }
 }
